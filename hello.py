@@ -7,7 +7,7 @@ from wtforms.validators import Required
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
 from flask.ext.script import Shell
-
+from flask.ext.migrate import Migrate, MigrateCommand
 
 #...
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -19,15 +19,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
 	'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 db= SQLAlchemy(app)
+migrate = Migrate(app, db)
+app.add_command('db', MigrateCommand)
 
 
 #moment = Moment(app)
 
-'''
+
 def make_shell_context():
 	return dict(app=app, db=db, User=User, Role=Role)
-manager.add_command("shell", Shell(make_context=make_shell_context))
-'''
+app.add_command("shell", Shell(make_context=make_shell_context))
+
 
 class Role(db.Model):
 	__tablename__ = 'roles'
